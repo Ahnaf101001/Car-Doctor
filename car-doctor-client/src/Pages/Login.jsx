@@ -26,7 +26,7 @@ const Login = () => {
                 const user = { email };
                 e.target.reset();
                 // get access token
-                axios.post('http://localhost:5000/jwt', user, {
+                axios.post('https://car-doctor-server-lake-delta.vercel.app/jwt', user, {
                     withCredentials: true,
                 })
                     .then(res => {

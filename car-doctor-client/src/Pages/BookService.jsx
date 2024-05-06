@@ -26,7 +26,7 @@ const BookService = () => {
 
         console.log(booking);
 
-        fetch('https://car-doctor-server-lake-delta.vercel.app/bookings', {
+        fetch('https://car-doctor-server-rust-chi.vercel.app/bookings', {
             method: 'POST', 
             headers: {
                 'content-type': 'application/json'

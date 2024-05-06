@@ -32,12 +32,12 @@ const router = createBrowserRouter([
         element: <SignUp></SignUp>,
       },
       {
-        path: 'book/:id', 
-        element: <PrivateRoute><BookService></BookService></PrivateRoute>, 
-        loader: ({params}) => fetch(`https://car-doctor-server-lake-delta.vercel.app/services/${params.id}`)
+        path: 'book/:id',
+        element: <PrivateRoute><BookService></BookService></PrivateRoute>,
+        loader: ({ params }) => fetch(`https://car-doctor-server-rust-chi.vercel.app/services/${params.id}`)
       },
       {
-        path: 'bookings', 
+        path: 'bookings',
         element: <PrivateRoute><Bookings></Bookings></PrivateRoute>
       },
     ]

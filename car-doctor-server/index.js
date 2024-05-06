@@ -11,7 +11,9 @@ const port = process.env.PORT || 5000;
 app.use(cors(
     {
         origin: [
-            'http://localhost:5173',
+            // 'http://localhost:5173',
+            'https://car-doctor-412f6.web.app',
+            'https://car-doctor-412f6.firebaseapp.com',
         ],
         credentials: true,
     }
@@ -36,12 +38,13 @@ const client = new MongoClient(uri, {
 
 // middleware
 const logger = async (req, res, next) => {
+    console.log('log info = ', req.method, req.url);
     console.log('called = ', req.host, req.originalUrl);
     next();
 }
 
 const verifyToken = async (req, res, next) => {
-    const token = req.cookies?.token;
+    const token = req?.cookies?.token;
     console.log('value of token in middleware = ', token);
     if (!token) {
         return res.status(401).send({
@@ -72,14 +75,29 @@ async function run() {
         // auth related api
         app.post('/jwt', logger, async (req, res) => {
             const user = req.body;
-            console.log(user);
-            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+            console.log('user for token = ', user);
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+                expiresIn: '1h',
+            });
             res
                 .cookie('token', token, {
                     httpOnly: true,
-                    secure: false,
+                    secure: true,
+                    sameSite: 'none',
                 })
                 .send({ success: true });
+        })
+
+        app.post('/logout', async (req, res) => {
+            const user = req.body;
+            console.log('logging out = ', user);
+            res
+                .clearCookie('token', {
+                    maxAge: 0,
+                })
+                .send({
+                    success: true,
+                })
         })
 
         // services related api
@@ -106,11 +124,13 @@ async function run() {
         // bookings related api
         app.get('/bookings', logger, verifyToken, async (req, res) => {
             console.log(req.query.email);
+            console.log('cookies = ', req.cookies);
+            console.log('token owner info = ', req.user);
             // console.log('token = ', req.cookies.token);
             console.log('user in the valid token = ', req.user);
-            if (req.query.email !== req.user.email) {
+            if (req.user.email !== req.query.email) {
                 return res.status(403).send({
-                    message: 'forbidden access'
+                    message: 'forbidden access',
                 })
             }
             let query = {};
